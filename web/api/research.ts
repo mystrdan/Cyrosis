@@ -27,18 +27,29 @@ async function searchWikipedia(question: string): Promise<WikiResult[]> {
   return results.filter((item): item is WikiResult => Boolean(item?.extract));
 }
 
-function evidencePrompt(question: string, sources: WikiResult[]): string {
-  const evidence = sources.map((source) => `[Source: ${source.title}]\\n${source.extract}`).join("\\n\\n");
+function languageName(code: string): string {
+  const languages: Record<string, string> = { en: "English", tw: "Twi", ak: "Akan", ee: "Ewe", gaa: "Ga", dag: "Dagbani", dga: "Dagaare", nzi: "Nzema", gur: "Gurene", xsm: "Kasem" };
+  return languages[code] || "English";
+}
+
+function evidencePrompt(question: string, sources: WikiResult[], language: string): string {
+  const evidence = sources.map((source) => `[Source: ${source.title}]\
+${source.extract}`).join("\
+\
+");
   return [
     "You are Cyro, a lightweight research assistant.",
     "Answer using only the supplied evidence. Distinguish facts from inference, acknowledge uncertainty, and do not invent citations.",
+    `Answer language: ${languageName(language)}.`,
     `Question: ${question}`,
     "Evidence:",
     evidence,
-  ].join("\\n\\n");
+  ].join("\
+\
+");
 }
 
-async function synthesize(question: string, sources: WikiResult[]): Promise<{ answer: string; mode: string }> {
+async function synthesize(question: string, sources: WikiResult[], language: string): Promise<{ answer: string; mode: string }> {
   if (!sources.length) return { answer: `I couldn't find a usable source for “${question}”. Try a more specific research question.`, mode: "retrieval-only" };
 
   const modelUrl = process.env.CYRO_MODEL_URL?.trim();
@@ -48,7 +59,7 @@ async function synthesize(question: string, sources: WikiResult[]): Promise<{ an
     const response = await fetch(modelUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${modelKey}` },
-      body: JSON.stringify({ model: modelName, messages: [{ role: "user", content: evidencePrompt(question, sources) }], temperature: 0.2 }),
+      body: JSON.stringify({ model: modelName, messages: [{ role: "user", content: evidencePrompt(question, sources, language) }], temperature: 0.2 }),
     });
     if (response.ok) {
       const data = (await response.json()) as ModelResponse;
@@ -57,18 +68,25 @@ async function synthesize(question: string, sources: WikiResult[]): Promise<{ an
     }
   }
 
-  const extracts = sources.slice(0, 3).map((source) => `${source.title}: ${source.extract}`).join("\\n\\n");
-  return { answer: `Initial research for “${question}”\\n\\n${extracts}\\n\\nThese are source extracts, not a final AI synthesis. Configure CYRO_MODEL_URL, CYRO_MODEL_KEY and CYRO_MODEL_NAME to enable model-assisted synthesis.`, mode: "retrieval-only" };
+  const extracts = sources.slice(0, 3).map((source) => `${source.title}: ${source.extract}`).join("\
+\
+");
+  return { answer: `Initial research for “${question}”\
+\
+${extracts}\
+\
+These are source extracts, not a final AI synthesis. Configure CYRO_MODEL_URL, CYRO_MODEL_KEY and CYRO_MODEL_NAME to enable model-assisted synthesis.`, mode: "retrieval-only" };
 }
 
 export default async function handler(req: RequestLike, res: ResponseLike) {
   if (req.method !== "POST") { res.status(405).json({ error: "Method not allowed" }); return; }
-  const body = req.body as { question?: unknown } | undefined;
+  const body = req.body as { question?: unknown; language?: unknown } | undefined;
   const question = typeof body?.question === "string" ? body.question.trim() : "";
+  const language = typeof body?.language === "string" ? body.language.trim() : "en";
   if (!question) { res.status(400).json({ error: "A research question is required." }); return; }
   try {
     const results = await searchWikipedia(question);
-    const synthesis = await synthesize(question, results);
+    const synthesis = await synthesize(question, results, language);
     res.status(200).json({ answer: synthesis.answer, question, sources: results.map(({ title, url }) => ({ title, url })), status: "researched", mode: synthesis.mode });
   } catch (error) {
     res.status(502).json({ error: error instanceof Error ? error.message : "Research provider failed.", question, sources: [], status: "error" });
