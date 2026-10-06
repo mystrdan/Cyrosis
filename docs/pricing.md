@@ -1,10 +1,10 @@
 # Cyro pricing
 
-Cyro uses a low-cost Africa-first pricing model.
+Cyro uses an Africa-first pricing model designed to stay accessible while supporting useful research.
 
 ## Minimum
 
-**₵0.02/day** — two Ghana pesewas per day.
+**₵2.00/day** — two Ghana cedis per day.
 
 This is the minimum paid access level, not a free-trial price.
 
@@ -12,9 +12,9 @@ This is the minimum paid access level, not a free-trial price.
 
 | Plan | Daily price | Approx. 30 days | Position |
 |---|---:|---:|---|
-| Essential | ₵0.02 | ₵0.60 | Everyday research |
-| Research | ₵0.05 | ₵1.50 | More frequent research and saved knowledge |
-| Deep Research | ₵0.10 | ₵3.00 | Heavier research workloads |
+| Essential | ₵2.00 | ₵60.00 | Everyday research |
+| Research | ₵5.00 | ₵150.00 | More frequent research and saved knowledge |
+| Deep Research | ₵10.00 | ₵300.00 | Heavier research workloads |
 
 The product should display the daily rate clearly. Billing cadence and payment-provider integration are intentionally separated from pricing so Cyro can support Ghanaian payment methods and other African payment rails later.
 
