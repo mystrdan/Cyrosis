@@ -18,6 +18,7 @@ Every challenge has a **30-second timer**.
 - Three-lane road with steering controls
 - Speed, distance, score and boost systems
 - Road obstacles, stage-scaled hazards and collision penalties
+- Lightweight route-aware roadside scenery
 - Knowledge challenges with explanations
 - 30-second challenge timer
 - Correct-answer speed boosts
