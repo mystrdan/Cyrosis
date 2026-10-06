@@ -27,10 +27,10 @@ Every challenge has a **30-second timer**.
 - Correct-answer speed boosts
 - Wrong-answer and timeout penalties
 - XP and coin progression with stage-scaled finish rewards
-- Five-stage progression
+- Infinite stage progression with repeating stage archetypes and escalating difficulty
 - Garage with Street, Sprint and Nitro
 - Mechanically distinct unlockable rides
-- Route-based knowledge: West Africa, Ghana, Blockchain
+- Route-based knowledge: West Africa, Popular Cities in Africa, Blockchain
 - Local progress with no account or login
 - Sound and reduced-motion settings (reduced motion changes visual roadside movement without changing gameplay speed)
 - Responsive mobile/desktop UI
@@ -78,17 +78,17 @@ Build for production:
 ### Progression
 Correct answers can increase speed, boost, score, XP, coins and answer streak.
 
-Completing the race distance awards the completed stage reward and advances the stage up to Stage 5. Later stages extend the race distance and increase hazard pressure. Manually ending a run does not award a completion reward. Challenge answer order is randomized each time.
+Completing the race distance awards the completed stage reward and advances to the next stage indefinitely. Stage archetypes cycle every five stages, while distance, obstacle pressure and checkpoint spacing continue scaling so there is no final stage. Manually ending a run does not award a completion reward. Challenge answer order is randomized each time.
 
 ## Routes
 
 | Route | Focus |
 |---|---|
 | West Africa | African history, geography and knowledge |
-| Ghana | Ghanaian history, geography and local knowledge |
+| Popular Cities in Africa | Major cities, capitals and urban culture across Africa |
 | Blockchain | Blockchain and digital-technology fundamentals |
 
-More regions, cultures, knowledge categories and roads can be added without changing the core racing loop. Stage labels and challenge messaging now make progression more visible while preserving the fixed 30-second challenge timer.
+More regions, cultures, knowledge categories and roads can be added without changing the core racing loop. Stage labels cycle through five escalating archetypes while the stage number continues upward indefinitely, preserving the fixed 30-second challenge timer.
 
 ## Progress storage
 
@@ -111,7 +111,7 @@ Roady stores gameplay progress locally in the browser under the `roady-v1` names
 
 1. Stabilize the racing loop and production build.
 2. Improve challenge variety and question quality.
-3. Make route/stage progression more meaningful with harder later stages — now using distinct race targets, checkpoint spacing and obstacle pressure.
+3. Make route/stage progression more meaningful with harder later stages — now using repeating stage archetypes plus continuous distance, checkpoint and obstacle scaling.
 4. Expand the garage and player progression with meaningful vehicle differences.
 5. Add richer road environments and visual feedback.
 6. Expand world knowledge without turning the game into a quiz app.
