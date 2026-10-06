@@ -18,12 +18,15 @@ on conflict (id) do update set
   name = excluded.name,
   daily_price_ghs = excluded.daily_price_ghs,
   daily_research_limit = excluded.daily_research_limit,
-  description = excluded.description;
+  description = excluded.description,
+  annual_price_ghs = excluded.annual_price_ghs,
+  billing_options = excluded.billing_options;
 
 create table if not exists public.cyro_subscriptions (
   user_id uuid primary key references auth.users(id) on delete cascade,
   plan_id text not null references public.cyro_plans(id),
   status text not null default 'active' check (status in ('active','past_due','paused','cancelled')),
+  billing_interval text not null default 'daily' check (billing_interval in ('daily','yearly')),
   starts_at timestamptz not null default now(),
   ends_at timestamptz,
   provider text,
