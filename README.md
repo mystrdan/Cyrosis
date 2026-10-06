@@ -18,6 +18,8 @@ Every challenge has a **30-second timer**.
 - Three-lane road with steering controls
 - Speed, distance, score and boost systems
 - Road obstacles, stage-scaled hazards and collision penalties
+- Stage-specific race targets, checkpoint frequency and obstacle pressure
+- Slightly stronger score scaling in later stages
 - Stage-aware race HUD and visual pressure cues
 - Lightweight route-aware roadside scenery
 - Knowledge challenges with explanations
@@ -109,7 +111,7 @@ Roady stores gameplay progress locally in the browser under the `roady-v1` names
 
 1. Stabilize the racing loop and production build.
 2. Improve challenge variety and question quality.
-3. Make route/stage progression more meaningful with harder later stages.
+3. Make route/stage progression more meaningful with harder later stages — now using distinct race targets, checkpoint spacing and obstacle pressure.
 4. Expand the garage and player progression with meaningful vehicle differences.
 5. Add richer road environments and visual feedback.
 6. Expand world knowledge without turning the game into a quiz app.
