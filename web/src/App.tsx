@@ -3,14 +3,25 @@ import type { FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { research, type ResearchResponse } from "./api";
 import { getCurrentSession, sendMagicLink, signOut, subscribeToAuth, userLabel } from "./auth";
-import { addResearchMessage, createResearchSession, listResearchSessions, type ResearchSession } from "./data/research";
+import {
+  addResearchMessage,
+  createResearchSession,
+  deleteKnowledge,
+  listKnowledge,
+  listResearchMessages,
+  listResearchSessions,
+  saveKnowledge,
+  type KnowledgeDocument,
+  type ResearchMessage,
+  type ResearchSession,
+} from "./data/research";
 
 const suggestions = ["Research an African market", "Explain a historical event", "Find reliable sources", "Build a knowledge brief"];
 
 const pricing = [
-  { name: "Essential", daily: 0.02, description: "The minimum Cyro plan for everyday research.", features: ["Core research", "Source-backed answers", "Personal history"] },
-  { name: "Research", daily: 0.05, description: "More room for serious research and knowledge work.", features: ["Everything in Essential", "Larger research allowance", "Saved knowledge"] },
-  { name: "Deep Research", daily: 0.10, description: "For heavier research workflows and frequent use.", features: ["Everything in Research", "Higher usage allowance", "Priority research capacity"] },
+  { name: "Essential", daily: 2.00, description: "The minimum Cyro plan for everyday research.", features: ["Core research", "Source-backed answers", "Personal history"] },
+  { name: "Research", daily: 5.00, description: "More room for serious research and knowledge work.", features: ["Everything in Essential", "Larger research allowance", "Saved knowledge"] },
+  { name: "Deep Research", daily: 10.00, description: "For heavier research workflows and frequent use.", features: ["Everything in Research", "Higher usage allowance", "Priority research capacity"] },
 ] as const;
 
 type Message = { role: "user" | "cyro"; text: string; result?: ResearchResponse };
@@ -26,8 +37,11 @@ export default function App() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<ResearchSession[]>([]);
+  const [knowledge, setKnowledge] = useState<KnowledgeDocument[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [savingKnowledge, setSavingKnowledge] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -46,7 +60,20 @@ export default function App() {
 
   useEffect(() => {
     if (!session || view !== "history") return;
-    listResearchSessions().then(setHistory).catch(() => setHistory([]));
+    setDataLoading(true);
+    listResearchSessions()
+      .then(setHistory)
+      .catch(() => setHistory([]))
+      .finally(() => setDataLoading(false));
+  }, [session, view]);
+
+  useEffect(() => {
+    if (!session || view !== "knowledge") return;
+    setDataLoading(true);
+    listKnowledge()
+      .then(setKnowledge)
+      .catch(() => setKnowledge([]))
+      .finally(() => setDataLoading(false));
   }, [session, view]);
 
   async function login(event: FormEvent) {
@@ -81,6 +108,50 @@ export default function App() {
     } finally { setLoading(false); }
   }
 
+  async function openHistory(id: string) {
+    setDataLoading(true);
+    try {
+      const rows = await listResearchMessages(id);
+      setSessionId(id);
+      setMessages(rows.filter((row) => row.role !== "system").map((row: ResearchMessage) => ({
+        role: row.role === "user" ? "user" : "cyro",
+        text: row.content,
+      })));
+      setView("research");
+    } catch {
+      setMessages([{ role: "cyro", text: "I couldn't reopen that research session." }]);
+    } finally {
+      setDataLoading(false);
+    }
+  }
+
+  async function saveAnswer(message: Message) {
+    if (!message.result || savingKnowledge !== null) return;
+    setSavingKnowledge(Date.now());
+    try {
+      const source = message.result.sources?.[0];
+      await saveKnowledge(
+        message.text.slice(0, 80) || "Cyro research",
+        message.text,
+        source?.url,
+        undefined,
+      );
+    } catch (error) {
+      setMessages((items) => [...items, { role: "cyro", text: error instanceof Error ? error.message : "Couldn't save that knowledge." }]);
+    } finally {
+      setSavingKnowledge(null);
+    }
+  }
+
+  async function removeKnowledge(id: number) {
+    try {
+      await deleteKnowledge(id);
+      setKnowledge((items) => items.filter((item) => item.id !== id));
+    } catch {
+      // Keep the current list if deletion fails.
+    }
+  }
+
   function newResearch() {
     setMessages([]);
     setSessionId(null);
@@ -105,13 +176,13 @@ export default function App() {
       <div className="account"><small>{userLabel(session.user)}</small><button onClick={signOut}>Sign out</button></div>
     </aside>
     <main className="main">
-      <header><div><span className="eyebrow">CYRO / {view.toUpperCase()}</span><h1>{view === "research" ? "What are you working on?" : view === "knowledge" ? "Your knowledge." : view === "history" ? "Your research history." : "Simple pricing."}</h1><p>{view === "research" ? "Ask a question, investigate a topic, or build knowledge you can keep." : view === "history" ? "Research sessions saved to your account." : view === "knowledge" ? "Saved knowledge will live here." : "Cyro starts at just ₵0.02 per day."}</p></div><div className="status"><i /> {loading ? "Researching" : "Ready"}</div></header>
+      <header><div><span className="eyebrow">CYRO / {view.toUpperCase()}</span><h1>{view === "research" ? "What are you working on?" : view === "knowledge" ? "Your knowledge." : view === "history" ? "Your research history." : "Simple pricing."}</h1><p>{view === "research" ? "Ask a question, investigate a topic, or build knowledge you can keep." : view === "history" ? "Research sessions saved to your account." : view === "knowledge" ? "Saved knowledge from your research." : "Cyro starts at just ₵2.00 per day."}</p></div><div className="status"><i /> {loading ? "Researching" : "Ready"}</div></header>
       <section className="workspace">
         {view === "pricing" ? <div className="pricing-grid">{pricing.map((plan, index) => <article className={`price-card ${index === 0 ? "price-card-featured" : ""}`} key={plan.name}><div><small>CYRO / {index === 0 ? "START HERE" : "PLAN"}</small><h2>{plan.name}</h2><p>{plan.description}</p></div><div className="price"><strong>₵{plan.daily.toFixed(2)}</strong><span>/ day</span></div><div className="price-month">About ₵{(plan.daily * 30).toFixed(2)} / 30 days</div><ul>{plan.features.map((feature) => <li key={feature}>✓ {feature}</li>)}</ul><button onClick={() => setView("research")}>Continue with Cyro</button></article>)}</div>
-          : view === "history" ? <div className="history-list">{history.length ? history.map((item) => <button key={item.id} onClick={() => { setSessionId(item.id); setView("research"); }}>{item.title || "Untitled research"}<span>{new Date(item.created_at).toLocaleDateString()}</span></button>) : <div className="empty"><div className="orb">C</div><h2>No research yet.</h2><p>Your signed-in research sessions will appear here.</p></div>}</div>
-          : view === "knowledge" ? <div className="empty"><div className="orb">C</div><h2>Knowledge is next.</h2><p>The database layer is ready for saved, user-owned knowledge.</p></div>
+          : view === "history" ? <div className="history-list">{dataLoading ? <div className="empty"><p>Loading history…</p></div> : history.length ? history.map((item) => <button key={item.id} onClick={() => openHistory(item.id)}>{item.title || "Untitled research"}<span>{new Date(item.created_at).toLocaleDateString()}</span></button>) : <div className="empty"><div className="orb">C</div><h2>No research yet.</h2><p>Your signed-in research sessions will appear here.</p></div>}</div>
+          : view === "knowledge" ? <div className="knowledge-list">{dataLoading ? <div className="empty"><p>Loading knowledge…</p></div> : knowledge.length ? knowledge.map((item) => <article className="knowledge-card" key={item.id}><div><small>{new Date(item.created_at).toLocaleDateString()}</small><h2>{item.title}</h2><p>{item.content}</p>{item.source_url && <a href={item.source_url} target="_blank" rel="noreferrer">Open source ↗</a>}</div><button onClick={() => removeKnowledge(item.id)}>Delete</button></article>) : <div className="empty"><div className="orb">C</div><h2>No saved knowledge yet.</h2><p>Save useful Cyro answers and they will stay in your personal knowledgebase.</p></div>}</div>
           : messages.length === 0 ? <div className="empty"><div className="orb">C</div><h2>Research starts here.</h2><p>Cyro will search sources, compare evidence, and build answers you can save.</p><div className="suggestions">{suggestions.map((item) => <button key={item} onClick={() => setQuestion(item)}>{item}<span>→</span></button>)}</div></div>
-          : <div className="messages">{messages.map((message, index) => <article className="message" key={index}><span className="avatar">{message.role === "user" ? "Y" : "C"}</span><div><small>{message.role === "user" ? "You" : "Cyro"}</small><p>{message.text}</p>{message.result?.sources?.length ? <div className="sources"><strong>Sources</strong>{message.result.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer">{source.title || source.url}</a>)}</div> : null}</div></article>)}</div>}
+          : <div className="messages">{messages.map((message, index) => <article className="message" key={index}><span className="avatar">{message.role === "user" ? "Y" : "C"}</span><div><small>{message.role === "user" ? "You" : "Cyro"}</small><p>{message.text}</p>{message.role === "cyro" && message.result?.sources?.length ? <div className="sources"><strong>Sources</strong>{message.result.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer">{source.title || source.url}</a>)}<button className="save-knowledge" onClick={() => saveAnswer(message)} disabled={savingKnowledge !== null}>{savingKnowledge !== null ? "Saving…" : "Save to knowledge"}</button></div> : null}</div></article>)}</div>}
       </section>
       {view === "research" && <form className="composer" onSubmit={submit}><textarea value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Ask Cyro anything..." rows={1} disabled={loading} /><button type="submit" aria-label="Send" disabled={loading}>{loading ? "…" : "↑"}</button><span>Research · Knowledge · Useful work</span></form>}
     </main>
