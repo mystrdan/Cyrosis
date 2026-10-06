@@ -1,41 +1,5 @@
-* { box-sizing: border-box; }
-:root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #e9edf2; background: #0b0d10; font-synthesis: none; }
-body { margin: 0; min-width: 320px; background: #0b0d10; }
-button, textarea { font: inherit; }
-.shell { min-height: 100vh; display: flex; background: #0b0d10; }
-.sidebar { width: 245px; border-right: 1px solid #20242a; padding: 24px 16px; display: flex; flex-direction: column; gap: 24px; background: #0d1014; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; }
-.mark, .orb, .avatar { display: grid; place-items: center; border-radius: 10px; background: #e9edf2; color: #0b0d10; font-weight: 800; }
-.mark { width: 30px; height: 30px; font-size: 15px; }
-.new-chat { border: 1px solid #30363d; background: #15191f; color: #f3f5f7; border-radius: 9px; padding: 10px 12px; text-align: left; cursor: pointer; }
-nav { display: grid; gap: 5px; }
-nav a { color: #89929e; padding: 10px 12px; border-radius: 8px; font-size: 14px; }
-nav a.active { color: #f4f6f8; background: #171b20; }
-.side-note { margin-top: auto; display: grid; gap: 6px; color: #747e8a; font-size: 12px; line-height: 1.5; padding: 12px; border: 1px solid #20242a; border-radius: 10px; }
-.side-note strong { color: #b8c0ca; }
-.main { flex: 1; max-width: 1180px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; min-height: 100vh; padding: 42px 42px 28px; }
-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
-.eyebrow { color: #69737f; font-size: 11px; letter-spacing: .14em; }
-h1 { margin: 10px 0 7px; font-size: clamp(28px, 4vw, 44px); letter-spacing: -.04em; }
-header p { color: #7f8995; margin: 0; }
-.status { border: 1px solid #20242a; border-radius: 999px; padding: 8px 11px; color: #929ba6; font-size: 12px; white-space: nowrap; }
-.status i { display: inline-block; width: 6px; height: 6px; background: #75d67a; border-radius: 50%; margin-right: 7px; }
-.workspace { flex: 1; display: grid; place-items: center; padding: 50px 0; }
-.empty { max-width: 720px; text-align: center; }
-.orb { width: 52px; height: 52px; margin: 0 auto 18px; border-radius: 15px; }
-h2 { margin: 0 0 10px; font-size: 25px; letter-spacing: -.02em; }
-.empty > p { color: #7f8995; max-width: 580px; line-height: 1.6; margin: 0 auto 28px; }
-.suggestions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.suggestions button { display: flex; justify-content: space-between; text-align: left; padding: 12px 14px; color: #adb5bf; background: #101419; border: 1px solid #20242a; border-radius: 9px; cursor: pointer; }
-.suggestions button:hover { border-color: #3a424b; color: #e9edf2; }
-.messages { width: min(780px, 100%); display: grid; gap: 20px; align-self: start; }
-.message { display: flex; gap: 12px; align-items: flex-start; }
-.avatar { flex: 0 0 30px; width: 30px; height: 30px; font-size: 12px; }
-.message small { color: #727c88; font-size: 11px; }
-.message p { margin: 5px 0 0; color: #d5dae0; line-height: 1.6; }
-.composer { position: relative; border: 1px solid #30363d; background: #11151a; border-radius: 13px; padding: 12px 52px 28px 14px; box-shadow: 0 10px 35px #0006; }
-.composer textarea { width: 100%; resize: none; border: 0; outline: 0; background: transparent; color: #f1f3f5; line-height: 1.5; min-height: 28px; }
-.composer textarea::placeholder { color: #626c78; }
-.composer button { position: absolute; right: 10px; top: 10px; width: 32px; height: 32px; border: 0; border-radius: 8px; background: #e9edf2; color: #0b0d10; cursor: pointer; font-weight: 800; }
-.composer > span { position: absolute; left: 14px; bottom: 8px; color: #525c68; font-size: 10px; }
-@media (max-width: 760px) { .sidebar { display: none; } .main { padding: 26px 16px 18px; } header { flex-direction: column; } .suggestions { grid-template-columns: 1fr; } }
+button { font: inherit; }
+nav button { display:block; width:100%; border:0; background:transparent; color:inherit; text-align:left; cursor:pointer; }
+nav button.active { background:rgba(255,255,255,.08); }
+.sources { margin-top:14px; display:grid; gap:6px; }
+.sources a { color:inherit; opacity:.72; font-size:.86rem; }
