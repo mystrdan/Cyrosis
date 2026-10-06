@@ -176,7 +176,18 @@ export default function App() {
     localStorage.setItem("cyro-language", value);
   }
 
-  async function startPayment(planId: string) {\n    if (paymentState === "starting") return;\n    setPaymentPlan(planId); setPaymentState("starting"); setPaymentMessage("");\n    try {\n      const result = await initiateMomoPayment(planId, billing, momoPhone, momoProvider);\n      setPaymentState(result.status === "success" ? "success" : "waiting");\n      setPaymentMessage(result.status === "success" ? "Payment confirmed. Your plan is active." : result.display_text);\n      const [nextSubscription, nextUsage] = await Promise.all([getCurrentCyroSubscription(), getTodayCyroUsage()]);\n      setSubscription(nextSubscription); setUsage(nextUsage);\n    } catch (error) { setPaymentState("error"); setPaymentMessage(error instanceof Error ? error.message : "Payment could not be started."); }\n  }\n\n  function newResearch() {
+  async function startPayment(planId: string) {
+    if (paymentState === "starting") return;
+    setPaymentPlan(planId); setPaymentState("starting"); setPaymentMessage("");
+    try {
+      const result = await initiateMomoPayment(planId, billing, momoPhone, momoProvider);
+      setPaymentState(result.status === "success" ? "success" : "waiting");
+      setPaymentMessage(result.status === "success" ? "Payment confirmed. Your plan is active." : result.display_text);
+      const [nextSubscription, nextUsage] = await Promise.all([getCurrentCyroSubscription(), getTodayCyroUsage()]);
+      setSubscription(nextSubscription); setUsage(nextUsage);
+    } catch (error) { setPaymentState("error"); setPaymentMessage(error instanceof Error ? error.message : "Payment could not be started."); }
+  }
+\n  function newResearch() {
     setMessages([]);
     setSessionId(null);
     setQuestion("");
