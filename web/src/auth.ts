@@ -7,6 +7,13 @@ export async function getCurrentSession(): Promise<Session | null> {
   return data.session;
 }
 
+export async function getCurrentClaims() {
+  if (!supabase) return null;
+  const { data, error } = await supabase.auth.getClaims();
+  if (error) return null;
+  return data.claims;
+}
+
 export async function sendMagicLink(email: string) {
   if (!supabase) throw new Error("Supabase Auth is not configured.");
   return supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
