@@ -7,10 +7,10 @@ export const CYRO_LANGUAGES: CyroLanguage[] = [
   { code: "ee", name: "Ewe", nativeName: "Eʋegbe", status: "planned" },
   { code: "gaa", name: "Ga", nativeName: "Gã", status: "planned" },
   { code: "dag", name: "Dagbani", nativeName: "Dagbanli", status: "planned" },
-  { code: "dagb", name: "Dagaare", nativeName: "Dagaare", status: "planned" },
+  { code: "dga", name: "Dagaare", nativeName: "Dagaare", status: "planned" },
   { code: "nzi", name: "Nzema", nativeName: "Nzema", status: "planned" },
   { code: "gur", name: "Gurene", nativeName: "Frafra", status: "planned" },
-  { code: "ksw", name: "Kasem", nativeName: "Kassem", status: "planned" },
+  { code: "xsm", name: "Kasem", nativeName: "Kassem", status: "planned" },
 ];
 
 export type ResearchResponse = {
