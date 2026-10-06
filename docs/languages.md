@@ -1,6 +1,6 @@
 # Cyro language roadmap
 
-Cyro is Africa-first and English-first.
+Cyro is Africa-first and multilingual by design, with English as the first production language and Ghanaian languages as a priority expansion.
 
 ## Initial language scope
 
