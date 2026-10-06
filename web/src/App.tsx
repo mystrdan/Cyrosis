@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { research, type ResearchResponse } from "./api";
+import { CYRO_LANGUAGES, research, type ResearchResponse } from "./api";
 import { getCurrentSession, sendMagicLink, signOut, subscribeToAuth, userLabel } from "./auth";
 import {
   addResearchMessage,
@@ -35,6 +35,7 @@ export default function App() {
   const [authMessage, setAuthMessage] = useState("");
   const [view, setView] = useState<View>("research");
   const [question, setQuestion] = useState("");
+  const [language, setLanguage] = useState(() => localStorage.getItem("cyro-language") || "en");
   const [messages, setMessages] = useState<Message[]>([]);
   const [history, setHistory] = useState<ResearchSession[]>([]);
   const [knowledge, setKnowledge] = useState<KnowledgeDocument[]>([]);
@@ -100,7 +101,7 @@ export default function App() {
       const activeSessionId = sessionId ?? (await createResearchSession(value.slice(0, 80))).id;
       if (!sessionId) setSessionId(activeSessionId);
       await addResearchMessage(activeSessionId, "user", value);
-      const result = await research(value);
+      const result = await research(value, language);
       await addResearchMessage(activeSessionId, "cyro", result.answer);
       setMessages((items) => [...items, { role: "cyro", text: result.answer, result }]);
     } catch (error) {
@@ -152,6 +153,11 @@ export default function App() {
     }
   }
 
+  function changeLanguage(value: string) {
+    setLanguage(value);
+    localStorage.setItem("cyro-language", value);
+  }
+
   function newResearch() {
     setMessages([]);
     setSessionId(null);
@@ -176,7 +182,7 @@ export default function App() {
       <div className="account"><small>{userLabel(session.user)}</small><button onClick={signOut}>Sign out</button></div>
     </aside>
     <main className="main">
-      <header><div><span className="eyebrow">CYRO / {view.toUpperCase()}</span><h1>{view === "research" ? "What are you working on?" : view === "knowledge" ? "Your knowledge." : view === "history" ? "Your research history." : "Simple pricing."}</h1><p>{view === "research" ? "Ask a question, investigate a topic, or build knowledge you can keep." : view === "history" ? "Research sessions saved to your account." : view === "knowledge" ? "Saved knowledge from your research." : "Cyro starts at just ₵2.00 per day."}</p></div><div className="status"><i /> {loading ? "Researching" : "Ready"}</div></header>
+      <header><div><span className="eyebrow">CYRO / {view.toUpperCase()}</span><h1>{view === "research" ? "What are you working on?" : view === "knowledge" ? "Your knowledge." : view === "history" ? "Your research history." : "Simple pricing."}</h1><p>{view === "research" ? "Ask a question, investigate a topic, or build knowledge you can keep." : view === "history" ? "Research sessions saved to your account." : view === "knowledge" ? "Saved knowledge from your research." : "Cyro starts at just ₵2.00 per day."}</p></div><div className="header-actions"><label className="language-picker"><span>Language</span><select value={language} onChange={(e) => changeLanguage(e.target.value)}>{CYRO_LANGUAGES.map((item) => <option key={item.code} value={item.code}>{item.nativeName}{item.status === "planned" ? " — coming soon" : ""}</option>)}</select></label><div className="status"><i /> {loading ? "Researching" : "Ready"}</div></div></header>
       <section className="workspace">
         {view === "pricing" ? <div className="pricing-grid">{pricing.map((plan, index) => <article className={`price-card ${index === 0 ? "price-card-featured" : ""}`} key={plan.name}><div><small>CYRO / {index === 0 ? "START HERE" : "PLAN"}</small><h2>{plan.name}</h2><p>{plan.description}</p></div><div className="price"><strong>₵{plan.daily.toFixed(2)}</strong><span>/ day</span></div><div className="price-month">About ₵{(plan.daily * 30).toFixed(2)} / 30 days</div><ul>{plan.features.map((feature) => <li key={feature}>✓ {feature}</li>)}</ul><button onClick={() => setView("research")}>Continue with Cyro</button></article>)}</div>
           : view === "history" ? <div className="history-list">{dataLoading ? <div className="empty"><p>Loading history…</p></div> : history.length ? history.map((item) => <button key={item.id} onClick={() => openHistory(item.id)}>{item.title || "Untitled research"}<span>{new Date(item.created_at).toLocaleDateString()}</span></button>) : <div className="empty"><div className="orb">C</div><h2>No research yet.</h2><p>Your signed-in research sessions will appear here.</p></div>}</div>
