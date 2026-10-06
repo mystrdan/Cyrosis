@@ -30,6 +30,8 @@ Every challenge has a **30-second timer**.
 - Local progress with no account or login
 - Sound and reduced-motion settings
 - Responsive mobile/desktop UI
+- Keyboard controls for lane switching, boost and challenges
+- Clean distinction between completed races and manually ended runs
 
 ## Philosophy
 
@@ -62,15 +64,17 @@ Build for production:
 ## Controls
 
 ### Racing
-- **← / →** — change lane
+- **← / →** or **A / D** — change lane
 - **BOOST** — consume boost and increase speed
+- **Space / B** — activate boost
 - **CHALLENGE** — trigger a knowledge challenge
-- **FINISH** — end the current run
+- **C** — trigger a challenge while racing
+- **END RUN** — leave the race without a completion reward
 
 ### Progression
 Correct answers can increase speed, boost, score, XP, coins and answer streak.
 
-Completing the race distance awards the current stage reward and advances the stage up to Stage 5.
+Completing the race distance awards the completed stage reward and advances the stage up to Stage 5. Manually ending a run does not award a completion reward.
 
 ## Routes
 
