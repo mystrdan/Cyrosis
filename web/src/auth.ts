@@ -10,7 +10,7 @@ export async function getCurrentSession(): Promise<Session | null> {
 export async function getCurrentClaims() {
   if (!supabase) return null;
   const { data, error } = await supabase.auth.getClaims();
-  if (error) return null;
+  if (error || !data) return null;
   return data.claims;
 }
 
