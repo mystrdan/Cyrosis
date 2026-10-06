@@ -99,3 +99,6 @@ create index if not exists cyro_payments_user_id_idx
 
 create index if not exists cyro_payments_provider_reference_idx
   on public.cyro_payments(provider_reference);
+
+
+create unique index if not exists cyro_payments_provider_reference_uidx on public.cyro_payments(provider_reference) where provider_reference is not null;
