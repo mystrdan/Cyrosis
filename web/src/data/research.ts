@@ -14,7 +14,30 @@ export type ResearchMessage = {
   created_at: string;
 };
 
-export type CyroPlan = {\n  id: string;\n  name: string;\n  daily_price_ghs: number;\n  daily_research_limit: number | null;\n  description: string;\n};\n\nexport type CyroSubscription = {\n  user_id: string;\n  plan_id: string;\n  status: string;\n  starts_at: string;\n  ends_at: string | null;\n};\n\nexport type CyroDailyUsage = {\n  user_id: string;\n  usage_date: string;\n  research_requests: number;\n  research_units: number;\n};\n\nexport type KnowledgeDocument = {
+export type CyroPlan = {
+  id: string;
+  name: string;
+  daily_price_ghs: number;
+  daily_research_limit: number | null;
+  description: string;
+};
+
+export type CyroSubscription = {
+  user_id: string;
+  plan_id: string;
+  status: string;
+  starts_at: string;
+  ends_at: string | null;
+};
+
+export type CyroDailyUsage = {
+  user_id: string;
+  usage_date: string;
+  research_requests: number;
+  research_units: number;
+};
+
+export type KnowledgeDocument = {
   id: number;
   title: string;
   content: string;
@@ -94,7 +117,38 @@ export async function saveKnowledge(title: string, content: string, sourceUrl?: 
   return data as KnowledgeDocument;
 }
 
-export async function listCyroPlans() {\n  if (!supabase) return [];\n  const { data, error } = await supabase\n    .from("cyro_plans")\n    .select("id,name,daily_price_ghs,daily_research_limit,description")\n    .order("daily_price_ghs", { ascending: true });\n  if (error) throw error;\n  return (data ?? []) as CyroPlan[];\n}\n\nexport async function getCurrentCyroSubscription() {\n  if (!supabase) return null;\n  const { data, error } = await supabase\n    .from("cyro_subscriptions")\n    .select("user_id,plan_id,status,starts_at,ends_at")\n    .maybeSingle();\n  if (error) throw error;\n  return (data ?? null) as CyroSubscription | null;\n}\n\nexport async function getTodayCyroUsage() {\n  if (!supabase) return null;\n  const { data, error } = await supabase\n    .from("cyro_daily_usage")\n    .select("user_id,usage_date,research_requests,research_units")\n    .eq("usage_date", new Date().toISOString().slice(0, 10))\n    .maybeSingle();\n  if (error) throw error;\n  return (data ?? null) as CyroDailyUsage | null;\n}\n\nexport async function deleteKnowledge(id: number) {
+export async function listCyroPlans() {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("cyro_plans")
+    .select("id,name,daily_price_ghs,daily_research_limit,description")
+    .order("daily_price_ghs", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as CyroPlan[];
+}
+
+export async function getCurrentCyroSubscription() {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("cyro_subscriptions")
+    .select("user_id,plan_id,status,starts_at,ends_at")
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as CyroSubscription | null;
+}
+
+export async function getTodayCyroUsage() {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("cyro_daily_usage")
+    .select("user_id,usage_date,research_requests,research_units")
+    .eq("usage_date", new Date().toISOString().slice(0, 10))
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as CyroDailyUsage | null;
+}
+
+export async function deleteKnowledge(id: number) {
   if (!supabase) throw new Error("Supabase is not configured.");
   const { error } = await supabase.from("knowledge_documents").delete().eq("id", id);
   if (error) throw error;
