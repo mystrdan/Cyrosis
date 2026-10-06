@@ -19,6 +19,7 @@ export type CyroPlan = {
   name: string;
   daily_price_ghs: number;
   daily_research_limit: number | null;
+  annual_price_ghs?: number | null;
   description: string;
 };
 
@@ -121,7 +122,7 @@ export async function listCyroPlans() {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("cyro_plans")
-    .select("id,name,daily_price_ghs,daily_research_limit,description")
+    .select("id,name,daily_price_ghs,daily_research_limit,annual_price_ghs,description")
     .order("daily_price_ghs", { ascending: true });
   if (error) throw error;
   return (data ?? []) as CyroPlan[];
@@ -152,4 +153,30 @@ export async function deleteKnowledge(id: number) {
   if (!supabase) throw new Error("Supabase is not configured.");
   const { error } = await supabase.from("knowledge_documents").delete().eq("id", id);
   if (error) throw error;
+}
+
+
+export type PaymentInitResponse = {
+  payment_id: string;
+  reference: string;
+  status: string;
+  display_text: string;
+  amount_ghs: number;
+  plan: string;
+  billing_interval: "daily" | "yearly";
+};
+
+export async function initiateMomoPayment(planId: string, billingInterval: "daily" | "yearly", momoPhone: string, momoProvider: "mtn" | "atl" | "vod") {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Your session has expired. Please sign in again.");
+  const response = await fetch("/api/payments/initiate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify({ plan_id: planId, billing_interval: billingInterval, momo_phone: momoPhone, momo_provider: momoProvider }),
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.error ?? "Could not start the MoMo payment.");
+  return payload as PaymentInitResponse;
 }
