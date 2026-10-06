@@ -14,7 +14,7 @@ export type ResearchMessage = {
   created_at: string;
 };
 
-export type KnowledgeDocument = {
+export type CyroPlan = {\n  id: string;\n  name: string;\n  daily_price_ghs: number;\n  daily_research_limit: number | null;\n  description: string;\n};\n\nexport type CyroSubscription = {\n  user_id: string;\n  plan_id: string;\n  status: string;\n  starts_at: string;\n  ends_at: string | null;\n};\n\nexport type CyroDailyUsage = {\n  user_id: string;\n  usage_date: string;\n  research_requests: number;\n  research_units: number;\n};\n\nexport type KnowledgeDocument = {
   id: number;
   title: string;
   content: string;
@@ -94,7 +94,7 @@ export async function saveKnowledge(title: string, content: string, sourceUrl?: 
   return data as KnowledgeDocument;
 }
 
-export async function deleteKnowledge(id: number) {
+export async function listCyroPlans() {\n  if (!supabase) return [];\n  const { data, error } = await supabase\n    .from("cyro_plans")\n    .select("id,name,daily_price_ghs,daily_research_limit,description")\n    .order("daily_price_ghs", { ascending: true });\n  if (error) throw error;\n  return (data ?? []) as CyroPlan[];\n}\n\nexport async function getCurrentCyroSubscription() {\n  if (!supabase) return null;\n  const { data, error } = await supabase\n    .from("cyro_subscriptions")\n    .select("user_id,plan_id,status,starts_at,ends_at")\n    .maybeSingle();\n  if (error) throw error;\n  return (data ?? null) as CyroSubscription | null;\n}\n\nexport async function getTodayCyroUsage() {\n  if (!supabase) return null;\n  const { data, error } = await supabase\n    .from("cyro_daily_usage")\n    .select("user_id,usage_date,research_requests,research_units")\n    .eq("usage_date", new Date().toISOString().slice(0, 10))\n    .maybeSingle();\n  if (error) throw error;\n  return (data ?? null) as CyroDailyUsage | null;\n}\n\nexport async function deleteKnowledge(id: number) {
   if (!supabase) throw new Error("Supabase is not configured.");
   const { error } = await supabase.from("knowledge_documents").delete().eq("id", id);
   if (error) throw error;
