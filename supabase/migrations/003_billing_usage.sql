@@ -1,7 +1,7 @@
 create table if not exists public.cyro_plans (
   id text primary key,
   name text not null unique,
-  daily_price_ghs numeric(10,2) not null check (daily_price_ghs >= 2.00),
+  daily_price_ghs numeric(10,2) not null check (daily_price_ghs >= 0.50),
   daily_research_limit integer,
   description text not null,
   created_at timestamptz not null default now()
@@ -9,9 +9,9 @@ create table if not exists public.cyro_plans (
 
 insert into public.cyro_plans (id, name, daily_price_ghs, daily_research_limit, description)
 values
-  ('essential', 'Essential', 2.00, 10, 'Everyday research'),
-  ('research', 'Research', 5.00, 50, 'More frequent research and saved knowledge'),
-  ('deep-research', 'Deep Research', 10.00, 200, 'Heavier research workloads')
+  ('essential', 'Essential', 0.50, 10, 'Everyday research'),
+  ('research', 'Research', 1.00, 50, 'More frequent research and saved knowledge'),
+  ('deep-research', 'Deep Research', 2.00, 200, 'Heavier research workloads')
 on conflict (id) do update set
   name = excluded.name,
   daily_price_ghs = excluded.daily_price_ghs,
