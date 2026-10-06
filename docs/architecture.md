@@ -31,7 +31,8 @@ Cyro
 3. Separate research from stored knowledge.
 4. Make sources first-class data.
 5. Avoid unnecessary infrastructure.
-6. Design for African context and use cases from the start.
+6. Design for Ghanaian customers and African context from the start.
+7. Keep research and knowledge global: Ghana is the customer home, not a geographic restriction.
 
 ## Initial storage
 
