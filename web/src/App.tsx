@@ -17,7 +17,6 @@ export default function App() {
     if (!value) return;
     setMessages((items) => [...items, { role: "user", text: value }]);
     setQuestion("");
-    setMessages((items) => [...items, { role: "user", text: value }]);
   }
 
   return (
