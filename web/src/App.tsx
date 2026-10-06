@@ -6,11 +6,17 @@ import { getCurrentSession, sendMagicLink, signOut, subscribeToAuth, userLabel }
 import {
   addResearchMessage,
   createResearchSession,
+  getCurrentCyroSubscription,
+  getTodayCyroUsage,
   deleteKnowledge,
   listKnowledge,
+  listCyroPlans,
   listResearchMessages,
   listResearchSessions,
   saveKnowledge,
+  type CyroDailyUsage,
+  type CyroPlan,
+  type CyroSubscription,
   type KnowledgeDocument,
   type ResearchMessage,
   type ResearchSession,
@@ -19,9 +25,9 @@ import {
 const suggestions = ["Research an African market", "Explain a historical event", "Find reliable sources", "Build a knowledge brief"];
 
 const pricing = [
-  { name: "Essential", daily: 2.00, description: "The minimum Cyro plan for everyday research.", features: ["Core research", "Source-backed answers", "Personal history"] },
-  { name: "Research", daily: 5.00, description: "More room for serious research and knowledge work.", features: ["Everything in Essential", "Larger research allowance", "Saved knowledge"] },
-  { name: "Deep Research", daily: 10.00, description: "For heavier research workflows and frequent use.", features: ["Everything in Research", "Higher usage allowance", "Priority research capacity"] },
+  { name: "Essential", daily: 0.50, description: "The minimum Cyro plan for everyday research.", features: ["Core research", "Source-backed answers", "Personal history"] },
+  { name: "Research", daily: 1.00, description: "More room for serious research and knowledge work.", features: ["Everything in Essential", "Larger research allowance", "Saved knowledge"] },
+  { name: "Deep Research", daily: 2.00, description: "For heavier research workflows and frequent use.", features: ["Everything in Research", "Higher usage allowance", "Priority research capacity"] },
 ] as const;
 
 type Message = { role: "user" | "cyro"; text: string; result?: ResearchResponse };
@@ -185,7 +191,7 @@ export default function App() {
       <div className="account"><small>{userLabel(session.user)}</small>{subscription ? <span className="plan-mini">{plans.find((plan) => plan.id === subscription.plan_id)?.name ?? subscription.plan_id}</span> : <span className="plan-mini">No plan selected</span>}<button onClick={signOut}>Sign out</button></div>
     </aside>
     <main className="main">
-      <header><div><span className="eyebrow">CYRO / {view.toUpperCase()}</span><h1>{view === "research" ? "What are you working on?" : view === "knowledge" ? "Your knowledge." : view === "history" ? "Your research history." : "Simple pricing."}</h1><p>{view === "research" ? "Ask a question, investigate a topic, or build knowledge you can keep." : view === "history" ? "Research sessions saved to your account." : view === "knowledge" ? "Saved knowledge from your research." : "Cyro starts at just ₵2.00 per day."}</p></div><div className="header-actions"><label className="language-picker"><span>Language</span><select value={language} onChange={(e) => changeLanguage(e.target.value)}>{CYRO_LANGUAGES.map((item) => <option key={item.code} value={item.code}>{item.nativeName}{item.status === "planned" ? " — coming soon" : ""}</option>)}</select></label><div className="status"><i /> {loading ? "Researching" : "Ready"}</div></div></header>
+      <header><div><span className="eyebrow">CYRO / {view.toUpperCase()}</span><h1>{view === "research" ? "What are you working on?" : view === "knowledge" ? "Your knowledge." : view === "history" ? "Your research history." : "Simple pricing."}</h1><p>{view === "research" ? "Ask a question, investigate a topic, or build knowledge you can keep." : view === "history" ? "Research sessions saved to your account." : view === "knowledge" ? "Saved knowledge from your research." : "Cyro starts at just ₵0.50 per day."}</p></div><div className="header-actions"><label className="language-picker"><span>Language</span><select value={language} onChange={(e) => changeLanguage(e.target.value)}>{CYRO_LANGUAGES.map((item) => <option key={item.code} value={item.code}>{item.nativeName}{item.status === "planned" ? " — coming soon" : ""}</option>)}</select></label><div className="status"><i /> {loading ? "Researching" : "Ready"}</div></div></header>
       <section className="workspace">
         {view === "pricing" ? <div className="pricing-grid"><div className="usage-strip"><strong>{subscription ? `Current plan: ${plans.find((plan) => plan.id === subscription.plan_id)?.name ?? subscription.plan_id}` : "No active plan"}</strong><span>{usage ? `${usage.research_requests} research requests today` : "Daily usage will appear here once available."}</span></div>{pricing.map((plan, index) => <article className={`price-card ${index === 0 ? "price-card-featured" : ""}`} key={plan.name}><div><small>CYRO / {index === 0 ? "START HERE" : "PLAN"}</small><h2>{plan.name}</h2><p>{plan.description}</p></div><div className="price"><strong>₵{plan.daily.toFixed(2)}</strong><span>/ day</span></div><div className="price-month">About ₵{(plan.daily * 30).toFixed(2)} / 30 days</div><ul>{plan.features.map((feature) => <li key={feature}>✓ {feature}</li>)}</ul><button onClick={() => setView("research")}>Continue with Cyro</button></article>)}</div>
           : view === "history" ? <div className="history-list">{dataLoading ? <div className="empty"><p>Loading history…</p></div> : history.length ? history.map((item) => <button key={item.id} onClick={() => openHistory(item.id)}>{item.title || "Untitled research"}<span>{new Date(item.created_at).toLocaleDateString()}</span></button>) : <div className="empty"><div className="orb">C</div><h2>No research yet.</h2><p>Your signed-in research sessions will appear here.</p></div>}</div>
