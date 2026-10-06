@@ -14,6 +14,15 @@ export type ResearchMessage = {
   created_at: string;
 };
 
+export type KnowledgeDocument = {
+  id: number;
+  title: string;
+  content: string;
+  source_url: string | null;
+  country: string | null;
+  created_at: string;
+};
+
 export async function createResearchSession(title?: string) {
   if (!supabase) throw new Error("Supabase is not configured.");
   const { data, error } = await supabase
@@ -58,6 +67,17 @@ export async function listResearchMessages(sessionId: string) {
   return (data ?? []) as ResearchMessage[];
 }
 
+export async function listKnowledge(limit = 50) {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("knowledge_documents")
+    .select("id,title,content,source_url,country,created_at")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as KnowledgeDocument[];
+}
+
 export async function saveKnowledge(title: string, content: string, sourceUrl?: string, country?: string) {
   if (!supabase) throw new Error("Supabase is not configured.");
   const { data, error } = await supabase
@@ -71,5 +91,11 @@ export async function saveKnowledge(title: string, content: string, sourceUrl?: 
     .select("id,title,content,source_url,country,created_at")
     .single();
   if (error) throw error;
-  return data;
+  return data as KnowledgeDocument;
+}
+
+export async function deleteKnowledge(id: number) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  const { error } = await supabase.from("knowledge_documents").delete().eq("id", id);
+  if (error) throw error;
 }
