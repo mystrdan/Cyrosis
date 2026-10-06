@@ -23,3 +23,17 @@ The ₵0.50/day Essential plan remains the minimum paid access level.
 Payment-provider integration is separate from product pricing so Cyro can support Ghanaian payment rails first and other payment methods later.
 
 Prices are product configuration and may change before public launch.
+
+
+## Ghana payment flow
+
+For Ghana checkout, Cyro will prioritize **Mobile Money prompt payments**. The customer enters their MoMo phone number and network, then receives an authorization prompt on the phone. This matches the local checkout experience supported by Ghana mobile-money payment APIs. citeturn0search6turn0search7
+
+Initial supported network choices:
+- MTN
+- AirtelTigo / ATMoney
+- Telecel
+
+Cyro will keep the payment provider behind a server-side adapter so we can start with an aggregator such as Paystack or integrate MTN's MoMo APIs directly later. MTN officially provides collection APIs for remote payment requests. citeturn0search0turn0search5
+
+The customer's phone number is payment information and should be stored securely; payment secrets must remain server-side.
