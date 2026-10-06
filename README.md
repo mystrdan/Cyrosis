@@ -18,6 +18,7 @@ Every challenge has a **30-second timer**.
 - Three-lane road with steering controls
 - Speed, distance, score and boost systems
 - Road obstacles, stage-scaled hazards and collision penalties
+- Stage-aware race HUD and visual pressure cues
 - Lightweight route-aware roadside scenery
 - Knowledge challenges with explanations
 - 30-second challenge timer
@@ -29,7 +30,7 @@ Every challenge has a **30-second timer**.
 - Mechanically distinct unlockable rides
 - Route-based knowledge: West Africa, Ghana, Blockchain
 - Local progress with no account or login
-- Sound and reduced-motion settings
+- Sound and reduced-motion settings (reduced motion changes visual roadside movement without changing gameplay speed)
 - Responsive mobile/desktop UI
 - Keyboard controls for lane switching, boost and challenges
 - Clean distinction between completed races and manually ended runs
@@ -85,7 +86,7 @@ Completing the race distance awards the completed stage reward and advances the 
 | Ghana | Ghanaian history, geography and local knowledge |
 | Blockchain | Blockchain and digital-technology fundamentals |
 
-More regions, cultures, knowledge categories and roads can be added without changing the core racing loop.
+More regions, cultures, knowledge categories and roads can be added without changing the core racing loop. Stage labels and challenge messaging now make progression more visible while preserving the fixed 30-second challenge timer.
 
 ## Progress storage
 
