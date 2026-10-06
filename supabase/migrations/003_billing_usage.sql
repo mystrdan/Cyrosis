@@ -69,3 +69,33 @@ create index if not exists cyro_subscriptions_plan_id_idx
 
 create index if not exists cyro_daily_usage_date_idx
   on public.cyro_daily_usage(usage_date);
+
+
+create table if not exists public.cyro_payments (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  plan_id text not null references public.cyro_plans(id),
+  billing_interval text not null check (billing_interval in ('daily','yearly')),
+  amount_ghs numeric(10,2) not null check (amount_ghs > 0),
+  currency text not null default 'GHS' check (currency = 'GHS'),
+  provider text,
+  provider_reference text,
+  momo_phone text,
+  momo_provider text check (momo_provider in ('mtn','atl','vod') or momo_provider is null),
+  status text not null default 'pending' check (status in ('pending','processing','success','failed','cancelled')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.cyro_payments enable row level security;
+
+create policy "users read own payments"
+  on public.cyro_payments for select
+  to authenticated
+  using (user_id = auth.uid());
+
+create index if not exists cyro_payments_user_id_idx
+  on public.cyro_payments(user_id);
+
+create index if not exists cyro_payments_provider_reference_idx
+  on public.cyro_payments(provider_reference);
