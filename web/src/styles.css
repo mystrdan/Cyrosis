@@ -43,3 +43,8 @@ nav button.active { background:rgba(255,255,255,.08); }
   .header-actions { align-items: flex-end; }
   .language-picker select { min-width: 125px; }
 }
+
+.plan-mini { display: block; margin: 3px 0 8px; font-size: 11px; color: #6b7280; }
+.usage-strip { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #e4e7eb; border-radius: 10px; background: #fafafa; font-size: 13px; }
+.usage-strip span { color: #6b7280; }
+@media (max-width: 760px) { .usage-strip { flex-direction: column; gap: 4px; } }
