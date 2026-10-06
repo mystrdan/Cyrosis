@@ -17,15 +17,15 @@ Every challenge has a **30-second timer**.
 - Browser-first racing gameplay
 - Three-lane road with steering controls
 - Speed, distance, score and boost systems
-- Road obstacles and collision penalties
+- Road obstacles, stage-scaled hazards and collision penalties
 - Knowledge challenges with explanations
 - 30-second challenge timer
 - Correct-answer speed boosts
 - Wrong-answer and timeout penalties
-- XP and coin progression
+- XP and coin progression with stage-scaled finish rewards
 - Five-stage progression
 - Garage with Street, Sprint and Nitro
-- Unlockable upgrades
+- Mechanically distinct unlockable rides
 - Route-based knowledge: West Africa, Ghana, Blockchain
 - Local progress with no account or login
 - Sound and reduced-motion settings
@@ -66,7 +66,7 @@ Build for production:
 ### Racing
 - **← / →** or **A / D** — change lane
 - **BOOST** — consume boost and increase speed
-- **Space / B** — activate boost
+- **Space / B** — activate boost (ride-dependent power)
 - **CHALLENGE** — trigger a knowledge challenge
 - **C** — trigger a challenge while racing
 - **END RUN** — leave the race without a completion reward
@@ -74,7 +74,7 @@ Build for production:
 ### Progression
 Correct answers can increase speed, boost, score, XP, coins and answer streak.
 
-Completing the race distance awards the completed stage reward and advances the stage up to Stage 5. Manually ending a run does not award a completion reward.
+Completing the race distance awards the completed stage reward and advances the stage up to Stage 5. Later stages extend the race distance and increase hazard pressure. Manually ending a run does not award a completion reward. Challenge answer order is randomized each time.
 
 ## Routes
 
@@ -107,8 +107,8 @@ Roady stores gameplay progress locally in the browser under the `roady-v1` names
 
 1. Stabilize the racing loop and production build.
 2. Improve challenge variety and question quality.
-3. Make route/stage progression more meaningful.
-4. Expand the garage and player progression.
+3. Make route/stage progression more meaningful with harder later stages.
+4. Expand the garage and player progression with meaningful vehicle differences.
 5. Add richer road environments and visual feedback.
 6. Expand world knowledge without turning the game into a quiz app.
 7. Add more game settings and accessibility polish.
