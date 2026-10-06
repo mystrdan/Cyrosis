@@ -34,3 +34,12 @@ nav button.active { background:rgba(255,255,255,.08); }
 .knowledge-card a { color:inherit; opacity:.65; font-size:.86rem; }
 .knowledge-card > button { align-self:flex-start; border:0; background:transparent; color:inherit; opacity:.5; cursor:pointer; }
 @media (max-width:900px) { .pricing-grid { grid-template-columns:1fr; max-width:520px; } .knowledge-card { flex-direction:column; } }
+
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.language-picker { display: grid; gap: 3px; font-size: 11px; color: #6b7280; }
+.language-picker select { min-width: 150px; border: 1px solid #d9dde3; border-radius: 8px; padding: 7px 9px; background: #fff; color: #111827; font: inherit; }
+@media (max-width: 760px) {
+  .header-actions { align-items: flex-end; }
+  .language-picker select { min-width: 125px; }
+}
